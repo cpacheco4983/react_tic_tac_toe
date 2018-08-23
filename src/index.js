@@ -3,30 +3,44 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 class Square extends React.Component {
-  constructor(props) {
-    //all components that have a constructor should call super(props)
-    super(props);
-    this.state = {
-      value: null
-    }
-  }
+  //removed constructor because square no longer keeps trach of game state.
+  //Now handled in Board
 
   render() {
     return (
       <button className="square"
-      //not adding '() =>' causes alert to happen on Component render instad of onClick
-      //Is is something related to passing by value and passing by reference?
-      //https://www.reddit.com/r/reactjs/comments/93mk1j/beginners_thread_easy_question_august_2018/e4jt9cp/
-      onClick={() => this.setState({value: 'X'})}>
-        {this.state.value}
+      //use onClick and value passed by Board
+      onClick={() => this.props.onClick()}>
+        {this.props.value}
       </button>
     );
   }
 }
 
 class Board extends React.Component {
+  //set Board to handle state of squares
+  constructor(props) {
+    super(props);
+    //set all squares to null by default
+    //state of squares is passed in renderSquare method
+    this.state = {
+      squares: Array(9).fill(null)
+    };
+  }
+  //handle clicking of squares by passing this to Square through Board
+  handleClick(i) {
+    //create a copy of squares array so we dont alter original.
+    //set clicked square value to X and set squares array value to new array
+    const squares = this.state.squares.slice();
+    squares[i] = 'X';
+    this.setState({squares: squares});
+  }
+
   renderSquare(i) {
-    return <Square value={i} />;
+    return <Square
+            //pass onClick to square so board can update state when square is clicked
+            value={this.state.squares[i]}
+            onClick={() => this.handleClick(i)} />;
   }
 
   render() {
