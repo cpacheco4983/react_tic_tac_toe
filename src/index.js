@@ -2,16 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-// replace Square class component with functional component.
-// functional components cannot have 'this' keyword and only contain render method
 function Square(props) {
   return (
     <button className="square"
-    //use onClick and value passed by Board
-    //remove arrow function and parens from onClick={() => props.onClick()}
-    //arrow function was there for access to correct 'this' but no longer needed since its not a class component anymore
-    //arrow function means it referenced its own 'this' now its using one passed from board?
-    //still works if arrow func is left in there. maybe just good practice to remove it?
     onClick={props.onClick}>
       {props.value}
     </button>
@@ -19,33 +12,31 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-  //set Board to handle state of squares
   constructor(props) {
     super(props);
-    //set all squares to null by default
-    //state of squares is passed in renderSquare method
     this.state = {
-      squares: Array(9).fill(null)
+      squares: Array(9).fill(null),
+      xIsNext: true
     };
   }
-  //handle clicking of squares by passing this to Square through Board
+
   handleClick(i) {
-    //create a copy of squares array so we dont alter original. This allows us to see what changed
-    //set clicked square value to X and set squares array value to new array
     const squares = this.state.squares.slice();
-    squares[i] = 'X';
-    this.setState({squares: squares});
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+    this.setState({
+      squares: squares,
+      xIsNext: !this.state.xIsNext
+    });
   }
 
   renderSquare(i) {
     return <Square
-            //pass onClick to square so board can update state when square is clicked
             value={this.state.squares[i]}
             onClick={() => this.handleClick(i)} />;
   }
 
   render() {
-    const status = 'Next player: X';
+    const status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
 
     return (
       <div>
