@@ -2,19 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 
-class Square extends React.Component {
-  //removed constructor because square no longer keeps trach of game state.
-  //Now handled in Board
-
-  render() {
-    return (
-      <button className="square"
-      //use onClick and value passed by Board
-      onClick={() => this.props.onClick()}>
-        {this.props.value}
-      </button>
-    );
-  }
+// replace Square class component with functional component.
+// functional components cannot have 'this' keyword and only contain render method
+function Square(props) {
+  return (
+    <button className="square"
+    //use onClick and value passed by Board
+    //remove arrow function and parens from onClick={() => props.onClick()}
+    //arrow function was there for access to correct 'this' but no longer needed since its not a class component anymore
+    //arrow function means it referenced its own 'this' now its using one passed from board?
+    //still works if arrow func is left in there. maybe just good practice to remove it?
+    onClick={props.onClick}>
+      {props.value}
+    </button>
+  );
 }
 
 class Board extends React.Component {
@@ -29,7 +30,7 @@ class Board extends React.Component {
   }
   //handle clicking of squares by passing this to Square through Board
   handleClick(i) {
-    //create a copy of squares array so we dont alter original.
+    //create a copy of squares array so we dont alter original. This allows us to see what changed
     //set clicked square value to X and set squares array value to new array
     const squares = this.state.squares.slice();
     squares[i] = 'X';
@@ -75,10 +76,6 @@ class Game extends React.Component {
       <div className="game">
         <div className="game-board">
           <Board />
-        </div>
-        <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
         </div>
       </div>
     );
