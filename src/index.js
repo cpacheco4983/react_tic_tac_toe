@@ -12,20 +12,35 @@ function Square(props) {
 }
 
 class Board extends React.Component {
+  //make winner and numOfTurns state vars
   constructor(props) {
     super(props);
     this.state = {
       squares: Array(9).fill(null),
-      xIsNext: true
+      xIsNext: true,
+      numOfTurns: 0,
+      winner: null
     };
   }
 
   handleClick(i) {
     const squares = this.state.squares.slice();
+    let numOfTurns, winner;
     squares[i] = this.state.xIsNext ? 'X' : 'O';
+    numOfTurns = this.state.numOfTurns;
+    winner = this.state.winner;
+    numOfTurns += 1;
+    
+    //only call calculateWinner if min number of turns for a win have been made
+    if(numOfTurns > 4) {
+      winner = calculateWinner(squares);
+    }
+
     this.setState({
       squares: squares,
-      xIsNext: !this.state.xIsNext
+      xIsNext: !this.state.xIsNext,
+      numOfTurns: numOfTurns,
+      winner: winner
     });
   }
 
@@ -36,10 +51,9 @@ class Board extends React.Component {
   }
 
   render() {
-    const winner = calculateWinner(this.state.squares);
     let status;
-    if(winner) {
-      status = 'Winner: ' + winner;
+    if(this.state.winner) {
+      status = 'Winner: ' + this.state.winner;
     }
     else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
@@ -80,7 +94,6 @@ class Game extends React.Component {
   }
 }
 
-//helper function to check for winner
 function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
@@ -93,7 +106,6 @@ function calculateWinner(squares) {
     [2, 4, 6]
   ];
 
-//iterates over lines and checks if each square in line[i] contains same value ie 'X' or 'O'
   for(let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if(squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
