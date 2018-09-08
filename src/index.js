@@ -26,11 +26,17 @@ class Board extends React.Component {
   handleClick(i) {
     const squares = this.state.squares.slice();
     let numOfTurns, winner;
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
     numOfTurns = this.state.numOfTurns;
     winner = this.state.winner;
     numOfTurns += 1;
-    
+
+    //do nothing on click if square is filled or winner has been declared
+    if(winner || squares[i]) {
+      return;
+    }
+
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+
     //only call calculateWinner if min number of turns for a win have been made
     if(numOfTurns > 4) {
       winner = calculateWinner(squares);
