@@ -12,62 +12,17 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-  //make winner and numOfTurns state vars
-  constructor(props) {
-    super(props);
-    this.state = {
-      squares: Array(9).fill(null),
-      xIsNext: true,
-      numOfTurns: 0,
-      winner: null
-    };
-  }
-
-  handleClick(i) {
-    const squares = this.state.squares.slice();
-    let numOfTurns, winner;
-    numOfTurns = this.state.numOfTurns;
-    winner = this.state.winner;
-    numOfTurns += 1;
-
-    //do nothing on click if square is filled or winner has been declared
-    if(winner || squares[i]) {
-      return;
-    }
-
-    squares[i] = this.state.xIsNext ? 'X' : 'O';
-
-    //only call calculateWinner if min number of turns for a win have been made
-    if(numOfTurns > 4) {
-      winner = calculateWinner(squares);
-    }
-
-    this.setState({
-      squares: squares,
-      xIsNext: !this.state.xIsNext,
-      numOfTurns: numOfTurns,
-      winner: winner
-    });
-  }
-
   renderSquare(i) {
-    return <Square
-            value={this.state.squares[i]}
-            onClick={() => this.handleClick(i)} />;
+    return (
+      <Square
+        value={this.props.squares[i]}
+        onClick={() => this.props.onClick(i)} />
+      );
   }
 
   render() {
-    let status;
-    if(this.state.winner) {
-      status = 'Winner: ' + this.state.winner;
-    }
-    else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-    }
-
     return (
       <div>
-        <div className="status">{status}</div>
         <div className="board-row">
           {this.renderSquare(0)}
           {this.renderSquare(1)}
@@ -89,11 +44,73 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+  //move constructor and handleClick from Board to Game component
+  constructor(props) {
+    super(props);
+    this.state = {
+      //board states now saved in history array
+      history: [{
+        squares: Array(9).fill(null)
+      }],
+      xIsNext: true,
+      numOfTurns: 0,
+      winner: null
+    };
+  }
+
+  handleClick(i) {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
+    let numOfTurns, winner;
+    numOfTurns = this.state.numOfTurns;
+    winner = this.state.winner;
+    numOfTurns += 1;
+
+    if(winner || squares[i]) {
+      return;
+    }
+
+    squares[i] = this.state.xIsNext ? 'X' : 'O';
+
+    if(numOfTurns > 4) {
+      winner = calculateWinner(squares);
+    }
+
+    this.setState({
+      //add board state to history arr
+      history: history.concat([{
+        squares: squares
+      }]),
+      xIsNext: !this.state.xIsNext,
+      numOfTurns: numOfTurns,
+      winner: winner
+    });
+  }
+
   render() {
+    const history = this.state.history;
+    const current = history[history.length - 1];
+    const winner = this.state.winner;
+
+    let status;
+    if(winner) {
+      status = 'Winner: ' + winner;
+    }
+    else {
+      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+    }
+
     return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board
+            squares={current.squares}
+            onClick={(i) => this.handleClick(i)}
+          />
+        </div>
+        <div className="game-info">
+          <div>{status}</div>
         </div>
       </div>
     );
