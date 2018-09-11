@@ -44,11 +44,9 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
-  //move constructor and handleClick from Board to Game component
   constructor(props) {
     super(props);
     this.state = {
-      //board states now saved in history array
       history: [{
         squares: Array(9).fill(null)
       }],
@@ -59,7 +57,8 @@ class Game extends React.Component {
   }
 
   handleClick(i) {
-    const history = this.state.history;
+    //instead of getting full history we get it to the number of turns taken so if we go back, future moves will be discarded
+    const history = this.state.history.slice(0, this.state.numOfTurns + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
     let numOfTurns, winner;
@@ -77,21 +76,40 @@ class Game extends React.Component {
       winner = calculateWinner(squares);
     }
 
+    //set numOfTurns to lenght of history array in case of jump back we have right number
     this.setState({
-      //add board state to history arr
       history: history.concat([{
         squares: squares
       }]),
       xIsNext: !this.state.xIsNext,
-      numOfTurns: numOfTurns,
+      numOfTurns: history.length,
       winner: winner
     });
   }
 
+  //set related state properties to correct values
+  jumpTo(turn) {
+    this.setState({
+      numOfTurns: turn,
+      xIsNext: (turn % 2) === 0,
+      winner: (turn > 4) ? calculateWinner(this.state.history[turn]) : null
+    })
+  }
+
   render() {
     const history = this.state.history;
-    const current = history[history.length - 1];
+    const current = history[this.state.numOfTurns];
     const winner = this.state.winner;
+
+    //create list of moves taken in game. step is board state, move is index?
+    const moves = history.map((step, move) => {
+      const desc = move ? 'Go to move #' + move : 'Go to game start';
+      return (
+        <li key={move}>
+          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+        </li>
+      )
+    });
 
     let status;
     if(winner) {
@@ -101,6 +119,7 @@ class Game extends React.Component {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
+    //add list of moves to Game component
     return (
       <div className="game">
         <div className="game-board">
@@ -111,6 +130,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <ol>{moves}</ol>
         </div>
       </div>
     );
