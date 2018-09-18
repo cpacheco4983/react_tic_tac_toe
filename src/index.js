@@ -57,7 +57,6 @@ class Game extends React.Component {
   }
 
   handleClick(i) {
-    //instead of getting full history we get it to the number of turns taken so if we go back, future moves will be discarded
     const history = this.state.history.slice(0, this.state.numOfTurns + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
@@ -76,7 +75,6 @@ class Game extends React.Component {
       winner = calculateWinner(squares);
     }
 
-    //set numOfTurns to lenght of history array in case of jump back we have right number
     this.setState({
       history: history.concat([{
         squares: squares
@@ -87,7 +85,6 @@ class Game extends React.Component {
     });
   }
 
-  //set related state properties to correct values
   jumpTo(turn) {
     this.setState({
       numOfTurns: turn,
@@ -101,7 +98,6 @@ class Game extends React.Component {
     const current = history[this.state.numOfTurns];
     const winner = this.state.winner;
 
-    //create list of moves taken in game. step is board state, move is index?
     const moves = history.map((step, move) => {
       const desc = move ? 'Go to move #' + move : 'Go to game start';
       return (
@@ -119,7 +115,6 @@ class Game extends React.Component {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
 
-    //add list of moves to Game component
     return (
       <div className="game">
         <div className="game-board">
