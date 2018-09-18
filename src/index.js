@@ -20,24 +20,31 @@ class Board extends React.Component {
       );
   }
 
+  renderBoard() {
+    let board = [];
+    let index = 0;
+
+    // loop to put each row on the board
+    for(let i = 0; i < 3; i++) {
+      let row = [];
+
+      // loop to create each square in the row
+      for(let j = 0; j < 3; j++) {
+        // must wrap the renderSquare function call in div because babel tries to interpret the call as an object.
+        // https://stackoverflow.com/questions/44849206/react-js-syntax-error-this-is-a-reserved-word-in-render-function
+        row.push(<div key={index}>{this.renderSquare(index)}</div>);
+        index++;
+      }
+      board.push(<div key={i} className="board-row">{row}</div>);
+    }
+
+    return board;
+  }
+
   render() {
     return (
       <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
+        {this.renderBoard()}
       </div>
     );
   }
