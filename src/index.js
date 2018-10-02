@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import './index.scss';
 
 function Square(props) {
   return (
@@ -43,7 +43,7 @@ class Board extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="board">
         {this.renderBoard()}
       </div>
     );
@@ -124,16 +124,17 @@ class Game extends React.Component {
 
     return (
       <div className="game">
+        <div className="game-title">Tic-Tac-Toe</div>
         <div className="game-board">
           <Board
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
           />
         </div>
-        <div className="game-info">
-          <div>{status}</div>
+        <div className="game-movelist">
           <ol>{moves}</ol>
         </div>
+        <div className="game-status">{status}</div>
       </div>
     );
   }
