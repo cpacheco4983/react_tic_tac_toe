@@ -132,6 +132,7 @@ class Game extends React.Component {
           />
         </div>
         <div className="game-movelist">
+          <h3>Move List</h3>
           <ol>{moves}</ol>
         </div>
         <div className="game-status">{status}</div>
